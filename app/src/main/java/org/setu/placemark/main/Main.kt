@@ -123,7 +123,7 @@ fun searchPlacemark() {
     if (id != null) {
         val placemark = store.findOne(id)
         if (placemark != null) {
-            println("Found: ID: ${placemark.id} | Title: ${placemark.title} | Description: ${placemark.description}")
+            println("Found: ID: ${placemark.id} | Title: ${placemark.title} | Description: ${placemark.desc}")
         } else {
             println("No placemark found with ID $id.")
         }

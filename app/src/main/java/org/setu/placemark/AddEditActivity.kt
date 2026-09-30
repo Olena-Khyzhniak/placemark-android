@@ -9,10 +9,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-//import org.setu.placemark.models.PlacemarkMemStore
-//import org.setu.placemark.models.PlacemarkModel
-//import org.setu.placemark.models.PlacemarkMemStore
-
+import org.setu.placemark.models.PlacedMark
 
 
 class AddEditActivity : AppCompatActivity() {

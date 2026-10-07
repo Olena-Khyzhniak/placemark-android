@@ -1,23 +1,18 @@
 package org.setu.placemark
 
-
-
-
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import org.setu.placemark.models.PlacedMark
+import org.setu.placemark.models.PlacemarkModel
 
-
+// Activity for adding a new Placemark or editing an existing one
 class AddEditActivity : AppCompatActivity() {
 
     private lateinit var titleInput: EditText
     private lateinit var descriptionInput: EditText
-    private lateinit var xInput: EditText
-    private lateinit var yInput: EditText
 
     private var editingId: Long? = null
 
@@ -48,67 +43,40 @@ class AddEditActivity : AppCompatActivity() {
             hint = "Description"
         }
 
-        xInput = EditText(this).apply {
-            hint = "X coordinate"
-            inputType =
-                android.text.InputType.TYPE_CLASS_NUMBER or
-                        android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
-        }
-
-        yInput = EditText(this).apply {
-            hint = "Y coordinate"
-            inputType =
-                android.text.InputType.TYPE_CLASS_NUMBER or
-                        android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
-        }
-
         val saveButton = Button(this).apply {
             text = "Save"
-
-            setOnClickListener {
-                saveMark()
-            }
+            setOnClickListener { saveMark() }
         }
 
         val cancelButton = Button(this).apply {
             text = "Cancel"
-
-            setOnClickListener {
-                finish()
-            }
+            setOnClickListener { finish() }
         }
 
         root.addView(titleInput)
         root.addView(descriptionInput)
-        root.addView(xInput)
-        root.addView(yInput)
         root.addView(saveButton)
         root.addView(cancelButton)
 
         setContentView(root)
     }
 
+    // Loads an existing mark into the input fields for editing
     private fun loadExistingMark(id: Long) {
 
         val mark = AppData.placedMarks.findOne(id)
 
         if (mark == null) {
-            Toast.makeText(
-                this,
-                "Mark not found",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(this, "Mark not found", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         titleInput.setText(mark.title)
-        descriptionInput.setText(mark.desc)
-        xInput.setText(mark.x.toString())
-        yInput.setText(mark.y.toString())
+        descriptionInput.setText(mark.description)
     }
 
+    // Validates inputs and saves a new or updated PlacemarkModel
     private fun saveMark() {
 
         val title = titleInput.text.toString().trim()
@@ -119,54 +87,14 @@ class AddEditActivity : AppCompatActivity() {
             return
         }
 
-        val x = xInput.text.toString().toDoubleOrNull()
-
-        if (x == null) {
-            xInput.error = "Enter a valid number"
-            return
-        }
-
-        val y = yInput.text.toString().toDoubleOrNull()
-
-        if (y == null) {
-            yInput.error = "Enter a valid number"
-            return
-        }
-
         if (editingId == null || editingId == -1L) {
-
-            val mark = PlacedMark(
-                title = title,
-                desc = description,
-                x = x,
-                y = y
-            )
-
+            val mark = PlacemarkModel(title = title, description = description)
             AppData.placedMarks.create(mark)
-
-            Toast.makeText(
-                this,
-                "Mark created",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(this, "Mark created", Toast.LENGTH_SHORT).show()
         } else {
-
-            val mark = PlacedMark(
-                id = editingId!!,
-                title = title,
-                desc = description,
-                x = x,
-                y = y
-            )
-
+            val mark = PlacemarkModel(id = editingId!!, title = title, description = description)
             AppData.placedMarks.update(mark)
-
-            Toast.makeText(
-                this,
-                "Mark updated",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Mark updated", Toast.LENGTH_SHORT).show()
         }
 
         finish()

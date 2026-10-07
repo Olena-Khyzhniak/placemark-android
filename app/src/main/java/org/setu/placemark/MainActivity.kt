@@ -1,7 +1,5 @@
 package org.setu.placemark
 
-
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
@@ -10,20 +8,19 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
-
+// Main screen: lists all Placemarks and provides Add/Edit/Delete actions
 class MainActivity : AppCompatActivity() {
 
     private lateinit var listLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         createUserInterface()
     }
 
+    // Refresh the list every time the user returns to this screen
     override fun onResume() {
         super.onResume()
-
         if (::listLayout.isInitialized) {
             displayMarks()
         }
@@ -45,8 +42,7 @@ class MainActivity : AppCompatActivity() {
         val addButton = Button(this).apply {
             text = "Add Mark"
             setOnClickListener {
-                val intent = Intent(this@MainActivity, AddEditActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this@MainActivity, AddEditActivity::class.java))
             }
         }
 
@@ -54,35 +50,24 @@ class MainActivity : AppCompatActivity() {
             orientation = LinearLayout.VERTICAL
         }
 
-        root.addView(
-            title,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        root.addView(
-            addButton,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        root.addView(
-            listLayout,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
+        root.addView(title, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ))
+        root.addView(addButton, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ))
+        root.addView(listLayout, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ))
 
         setContentView(root)
-
         displayMarks()
     }
 
+    // Rebuilds the list view from the current store contents
     private fun displayMarks() {
 
         listLayout.removeAllViews()
@@ -90,15 +75,12 @@ class MainActivity : AppCompatActivity() {
         val marks = AppData.placedMarks.findAll()
 
         if (marks.isEmpty()) {
-
             val emptyText = TextView(this).apply {
                 text = "No placed marks yet."
                 textSize = 18f
                 setPadding(0, 40, 0, 40)
             }
-
             listLayout.addView(emptyText)
-
             return
         }
 
@@ -115,33 +97,21 @@ class MainActivity : AppCompatActivity() {
             }
 
             val markDescription = TextView(this).apply {
-                text = mark.desc
+                text = mark.description
                 textSize = 16f
-            }
-
-            val coordinates = TextView(this).apply {
-                text = "X: ${mark.x}, Y: ${mark.y}"
-                textSize = 14f
             }
 
             val editButton = Button(this).apply {
                 text = "Edit"
-
                 setOnClickListener {
-                    val intent = Intent(
-                        this@MainActivity,
-                        AddEditActivity::class.java
-                    )
-
+                    val intent = Intent(this@MainActivity, AddEditActivity::class.java)
                     intent.putExtra("id", mark.id)
-
                     startActivity(intent)
                 }
             }
 
             val deleteButton = Button(this).apply {
                 text = "Delete"
-
                 setOnClickListener {
                     AppData.placedMarks.delete(mark.id)
                     displayMarks()
@@ -150,7 +120,6 @@ class MainActivity : AppCompatActivity() {
 
             markLayout.addView(markTitle)
             markLayout.addView(markDescription)
-            markLayout.addView(coordinates)
             markLayout.addView(editButton)
             markLayout.addView(deleteButton)
 

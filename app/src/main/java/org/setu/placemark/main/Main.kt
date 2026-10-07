@@ -1,8 +1,9 @@
 package org.setu.placemark.main
 
 import org.setu.placemark.models.PlacemarkMemStore
-import org.setu.placemark.models.PlacedMark
+import org.setu.placemark.models.PlacemarkModel
 
+// Global store instance used by all console functions
 val store = PlacemarkMemStore()
 
 fun main() {
@@ -22,6 +23,7 @@ fun main() {
     } while (input != 0)
 }
 
+// Displays the main menu and returns the user's choice
 fun menu(): Int {
     println("\n----------------------------------")
     println(" MAIN MENU")
@@ -36,6 +38,7 @@ fun menu(): Int {
     return readlnOrNull()?.toIntOrNull() ?: -1
 }
 
+// Prompts the user for a title and description, then creates a new PlacemarkModel
 fun addPlacemark() {
     println("\n--- Add Placemark ---")
     print("Enter Title: ")
@@ -44,7 +47,7 @@ fun addPlacemark() {
     val description = readlnOrNull()?.trim().orEmpty()
 
     if (title.isNotEmpty()) {
-        val placemark = PlacedMark(title = title, desc = description)
+        val placemark = PlacemarkModel(title = title, description = description)
         store.create(placemark)
         println("Placemark added successfully with ID: ${placemark.id}")
     } else {
@@ -52,49 +55,44 @@ fun addPlacemark() {
     }
 }
 
+// Lists all placemarks currently in the store
 fun listPlacemarks() {
     println("\n--- All Placemarks ---")
     val placemarks = store.findAll()
     if (placemarks.isEmpty()) {
         println("No placemarks stored yet.")
     } else {
-        placemarks.forEach { println("ID: ${it.id} | Title: ${it.title} | Description: ${it.desc}") }
+        placemarks.forEach { println("ID: ${it.id} | Title: ${it.title} | Description: ${it.description}") }
     }
 }
 
+// Finds a placemark by ID and updates its title and description
 fun updatePlacemark() {
-    println("Update Placemark")
-    println()
+    println("\n--- Update Placemark ---")
     listPlacemarks()
-    print("Enter ID of Placemark to update: ")
-    val searchId = readlnOrNull()?.toLongOrNull()
-    val aPlacemark = searchId?.let { store.findOne(it) }
-    val tempTitle : String?
-    val tempDescription : String?
+    if (store.findAll().isEmpty()) return
 
-    if(aPlacemark != null) {
-        print("Enter a new Title for [ " + aPlacemark.title + " ] : ")
-        tempTitle = readlnOrNull().orEmpty().trim()
-        print("Enter a new Description for [ " + aPlacemark.desc + " ] : ")
-        tempDescription = readlnOrNull().orEmpty().trim()
+    print("\nEnter ID of Placemark to update: ")
+    val id = readlnOrNull()?.toLongOrNull()
 
-        if (tempTitle.isNotEmpty() && tempDescription.isNotEmpty()) {
-            aPlacemark.title = tempTitle
-            aPlacemark.desc = tempDescription
-            store.update(aPlacemark)
-            println(
-                "You updated [ " + aPlacemark.title + " ] for title " +
-                        "and [ " + aPlacemark.desc + " ] for description")
-            println("\nPlacemark Updated : [ $aPlacemark ]")
+    if (id != null && store.findOne(id) != null) {
+        print("Enter New Title: ")
+        val title = readlnOrNull()?.trim().orEmpty()
+        print("Enter New Description: ")
+        val description = readlnOrNull()?.trim().orEmpty()
+
+        if (title.isNotEmpty()) {
+            val updated = store.update(PlacemarkModel(id = id, title = title, description = description))
+            if (updated) println("Placemark updated successfully.")
+        } else {
+            println("Title cannot be empty. Update cancelled.")
         }
-        else
-            println("\nPlacemark Not Updated...")
+    } else {
+        println("Placemark with ID $id not found.")
     }
-    else
-        println("\nPlacemark Not Updated...")
 }
 
-
+// Finds a placemark by ID and removes it from the store
 fun deletePlacemark() {
     println("\n--- Delete Placemark ---")
     listPlacemarks()
@@ -115,6 +113,7 @@ fun deletePlacemark() {
     }
 }
 
+// Searches for a placemark by ID and displays it if found
 fun searchPlacemark() {
     println("\n--- Search Placemark ---")
     print("Enter ID: ")
@@ -123,7 +122,7 @@ fun searchPlacemark() {
     if (id != null) {
         val placemark = store.findOne(id)
         if (placemark != null) {
-            println("Found: ID: ${placemark.id} | Title: ${placemark.title} | Description: ${placemark.desc}")
+            println("Found: ID: ${placemark.id} | Title: ${placemark.title} | Description: ${placemark.description}")
         } else {
             println("No placemark found with ID $id.")
         }

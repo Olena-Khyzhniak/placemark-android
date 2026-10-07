@@ -2,26 +2,25 @@ package org.setu.placemark.models
 
 import java.util.concurrent.atomic.AtomicLong
 
+// In-memory implementation of PlacemarkStore using an ArrayList
 class PlacemarkMemStore : PlacemarkStore {
-    private val placemarks = ArrayList<PlacedMark>()
+    private val placemarks = ArrayList<PlacemarkModel>()
     private val lastId = AtomicLong(0L)
 
-    override fun findAll(): List<PlacedMark> {
+    override fun findAll(): List<PlacemarkModel> {
         return placemarks
     }
 
-    override fun create(placemark: PlacedMark) {
+    override fun create(placemark: PlacemarkModel) {
         placemark.id = lastId.incrementAndGet()
         placemarks.add(placemark)
     }
 
-    override fun update(placemark: PlacedMark): Boolean {
+    override fun update(placemark: PlacemarkModel): Boolean {
         val foundPlacemark = findOne(placemark.id)
         return if (foundPlacemark != null) {
             foundPlacemark.title = placemark.title
-            foundPlacemark.desc = placemark.desc
-            foundPlacemark.x = placemark.x
-            foundPlacemark.y = placemark.y
+            foundPlacemark.description = placemark.description
             true
         } else {
             false
@@ -38,7 +37,7 @@ class PlacemarkMemStore : PlacemarkStore {
         }
     }
 
-    override fun findOne(id: Long): PlacedMark? {
+    override fun findOne(id: Long): PlacemarkModel? {
         return placemarks.find { p -> p.id == id }
     }
 }

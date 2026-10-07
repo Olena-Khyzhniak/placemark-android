@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import org.setu.placemark.models.PlacemarkModel
 
 // Activity for adding a new Placemark or editing an existing one
@@ -32,7 +35,20 @@ class AddEditActivity : AppCompatActivity() {
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(32, 320, 32, 32)
+            setPadding(32, 32, 32, 32)
+        }
+
+        // Apply system window insets so content sits below the status bar
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(32, bars.top + 16, 32, bars.bottom + 16)
+            insets
+        }
+
+        val screenTitle = TextView(this).apply {
+            text = if (editingId != null && editingId != -1L) "Edit Mark" else "Add Mark"
+            textSize = 24f
+            setPadding(0, 0, 0, 24)
         }
 
         titleInput = EditText(this).apply {
@@ -53,6 +69,7 @@ class AddEditActivity : AppCompatActivity() {
             setOnClickListener { finish() }
         }
 
+        root.addView(screenTitle)
         root.addView(titleInput)
         root.addView(descriptionInput)
         root.addView(saveButton)

@@ -32,3 +32,8 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Private project docs (FYP, personal notes)
+docs/fyp.md
+docs/fyp_project.docx
+.bob/

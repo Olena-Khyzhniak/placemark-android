@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Placemark</string>
+    <string name="main_title">Placed Marks</string>
+    <string name="btn_view_marks">View Marks</string>
+    <string name="btn_add_mark">Add Mark</string>
+    <string name="btn_back_to_menu">Back to menu</string>
+    <string name="btn_edit">Edit</string>
+    <string name="btn_delete">Delete</string>
+    <string name="label_add_mark">Add Mark</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_x">X coordinate</string>
+    <string name="hint_y">Y coordinate</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
 </resources>

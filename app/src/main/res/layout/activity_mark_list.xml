@@ -5,29 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    tools:context=".MainActivity">
+    tools:context=".MarkListActivity">
 
     <TextView
-        android:id="@+id/mainTitle"
+        android:id="@+id/marksTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/main_title"
-        android:textSize="32sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/viewMarksButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/btn_view_marks" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/marksRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <Button
-        android:id="@+id/addMarkButton"
+        android:id="@+id/returnButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/btn_add_mark" />
+        android:text="@string/btn_back_to_menu" />
 
 </LinearLayout>

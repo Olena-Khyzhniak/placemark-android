@@ -3,11 +3,13 @@ package org.setu.placemark
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import timber.log.Timber
 
-class MarkListActivity : AppCompatActivity() {
+class MarkListActivity : AppCompatActivity(), OnMarkListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PlacedMarkAdapter
@@ -21,14 +23,7 @@ class MarkListActivity : AppCompatActivity() {
 
         adapter = PlacedMarkAdapter(
             marks = AppData.placedMarks.findAll(),
-
-            onEdit = { mark ->
-                editMark(mark)
-            },
-
-            onDelete = { mark ->
-                deleteMark(mark)
-            }
+            listener = this
         )
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -49,14 +44,30 @@ class MarkListActivity : AppCompatActivity() {
         }
     }
 
-    private fun editMark(mark: PlacedMark) {
+    // Short click → open edit screen for the selected mark
+    override fun onMarkClick(mark: PlacedMark) {
+        Timber.d("Editing mark id=${mark.id}, title=${mark.title}")
         val intent = Intent(this, AddEditActivity::class.java)
         intent.putExtra("id", mark.id)
         startActivity(intent)
     }
 
-    private fun deleteMark(mark: PlacedMark) {
-        AppData.placedMarks.delete(mark.id)
-        adapter.updateMarks(AppData.placedMarks.findAll())
+    // Long click → show confirmation dialog before deleting the mark
+    override fun onMarkLongClick(mark: PlacedMark): Boolean {
+        Timber.d("Delete requested for mark id=${mark.id}, title=${mark.title}")
+        AlertDialog.Builder(this)
+            .setTitle("Delete this mark?")
+            .setMessage("\"${mark.title}\" will be permanently removed.")
+            .setPositiveButton("Delete") { _, _ ->
+                Timber.d("Delete confirmed for mark id=${mark.id}")
+                AppData.placedMarks.delete(mark.id)
+                adapter.updateMarks(AppData.placedMarks.findAll())
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                Timber.d("Delete cancelled for mark id=${mark.id}")
+                dialog.dismiss()
+            }
+            .show()
+        return true
     }
 }

@@ -6,6 +6,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import timber.log.Timber
 
 class AddEditActivity : AppCompatActivity() {
 
@@ -33,8 +34,11 @@ class AddEditActivity : AppCompatActivity() {
             .takeIf { it != -1L }
 
         if (editingId != null) {
+            Timber.d("Opening AddEditActivity to edit mark id=$editingId")
             findViewById<TextView>(R.id.formTitle).text = "Edit Mark"
             loadExistingMark(editingId!!)
+        } else {
+            Timber.d("Opening AddEditActivity to create a new mark")
         }
 
         saveButton.setOnClickListener { saveMark() }
@@ -46,10 +50,13 @@ class AddEditActivity : AppCompatActivity() {
         val mark = AppData.placedMarks.findOne(id)
 
         if (mark == null) {
+            Timber.w("Mark not found for id=$id")
             Toast.makeText(this, "Mark not found", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
+
+        Timber.d("Loaded mark id=${mark.id}, title=${mark.title}")
 
         titleInput.setText(mark.title)
         descriptionInput.setText(mark.description)
@@ -87,6 +94,7 @@ class AddEditActivity : AppCompatActivity() {
                 y = y
             )
             AppData.placedMarks.create(mark)
+            Timber.d("Mark created with title=$title")
             Toast.makeText(this, "Mark created", Toast.LENGTH_SHORT).show()
         } else {
             val mark = PlacedMark(
@@ -97,6 +105,7 @@ class AddEditActivity : AppCompatActivity() {
                 y = y
             )
             AppData.placedMarks.update(mark)
+            Timber.d("Mark updated id=$editingId, title=$title")
             Toast.makeText(this, "Mark updated", Toast.LENGTH_SHORT).show()
         }
 

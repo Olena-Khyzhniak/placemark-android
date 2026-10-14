@@ -1,17 +1,16 @@
 package org.setu.placemark
 
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import timber.log.Timber
 
+// Adapter for the marks list. Item click triggers edit; long-click triggers delete.
 class PlacedMarkAdapter(
     private var marks: List<PlacedMark>,
-    private val onEdit: (PlacedMark) -> Unit,
-    private val onDelete: (PlacedMark) -> Unit
+    private val listener: OnMarkListener
 ) : RecyclerView.Adapter<PlacedMarkAdapter.MarkViewHolder>() {
 
     class MarkViewHolder(itemView: View) :
@@ -25,12 +24,6 @@ class PlacedMarkAdapter(
 
         val coordinatesText: TextView =
             itemView.findViewById(R.id.coordinatesText)
-
-        val editButton: Button =
-            itemView.findViewById(R.id.editButton)
-
-        val deleteButton: Button =
-            itemView.findViewById(R.id.deleteButton)
     }
 
     override fun onCreateViewHolder(
@@ -64,12 +57,16 @@ class PlacedMarkAdapter(
         holder.coordinatesText.text =
             "X: ${mark.x}, Y: ${mark.y}"
 
-        holder.editButton.setOnClickListener {
-            onEdit(mark)
+        // Short click → edit the selected mark
+        holder.itemView.setOnClickListener {
+            Timber.d("Item clicked: id=${mark.id}")
+            listener.onMarkClick(mark)
         }
 
-        holder.deleteButton.setOnClickListener {
-            onDelete(mark)
+        // Long click → request deletion of the selected mark
+        holder.itemView.setOnLongClickListener {
+            Timber.d("Item long-clicked: id=${mark.id}")
+            listener.onMarkLongClick(mark)
         }
     }
 
@@ -82,4 +79,3 @@ class PlacedMarkAdapter(
         notifyDataSetChanged()
     }
 }
-

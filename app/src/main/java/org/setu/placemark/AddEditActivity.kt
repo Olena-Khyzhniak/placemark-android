@@ -1,10 +1,13 @@
 package org.setu.placemark
 
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import timber.log.Timber
 
@@ -15,7 +18,28 @@ class AddEditActivity : AppCompatActivity() {
     private lateinit var xInput: EditText
     private lateinit var yInput: EditText
 
+    var imagePreview: ImageView? = null
+    var selectedImageUri: Uri? = null
+
     private var editingId: Long? = null
+
+    val imagePicker =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+            if (uri != null) {
+                // Keep access to the document URI for later use, when supported.
+                try {
+                    contentResolver.takePersistableUriPermission(
+                        uri,
+                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                } catch (_: SecurityException) {
+                    // Some providers may not grant persistable access.
+                }
+
+                selectedImageUri = uri
+                imagePreview!!.setImageURI(uri)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +51,7 @@ class AddEditActivity : AppCompatActivity() {
         xInput = findViewById(R.id.xInput)
         yInput = findViewById(R.id.yInput)
 
+        imagePreview = findViewById(R.id.imageViewAdd)
         val saveButton = findViewById<Button>(R.id.saveButton)
         val cancelButton = findViewById<Button>(R.id.cancelButton)
 
@@ -43,6 +68,10 @@ class AddEditActivity : AppCompatActivity() {
 
         saveButton.setOnClickListener { saveMark() }
         cancelButton.setOnClickListener { finish() }
+
+        findViewById<Button>(R.id.imagePickButton).setOnClickListener {
+            imagePicker.launch(arrayOf("image/*"))
+        }
     }
 
     private fun loadExistingMark(id: Long) {
@@ -59,51 +88,58 @@ class AddEditActivity : AppCompatActivity() {
         Timber.d("Loaded mark id=${mark.id}, title=${mark.title}")
 
         titleInput.setText(mark.title)
-        descriptionInput.setText(mark.description)
+        descriptionInput.setText(mark.desc)
         xInput.setText(mark.x.toString())
         yInput.setText(mark.y.toString())
+        // Restore the saved image, or show a placeholder when none was set
+        selectedImageUri = mark.imageUri?.let { Uri.parse(it) }
+        if (selectedImageUri != null) {
+            imagePreview?.setImageURI(selectedImageUri)
+        } else {
+            imagePreview?.setImageResource(android.R.drawable.ic_menu_gallery)
+        }
     }
 
     private fun saveMark() {
 
         val title = titleInput.text.toString().trim()
-        val description = descriptionInput.text.toString().trim()
+        val desc = descriptionInput.text.toString().trim()
 
-        if (title.isEmpty()) {
-            titleInput.error = "Title is required"
-            return
+        val x = xInput.text.toString().toDoubleOrNull() ?: 0.0
+        val y = yInput.text.toString().toDoubleOrNull() ?: 0.0
+
+        val mark = if (editingId == null) {
+            PlacedMark(
+                title = title,
+                desc = desc,
+                x = x,
+                y = y,
+                imageUri = selectedImageUri?.toString()
+            )
+        } else {
+            PlacedMark(
+                id = editingId!!,
+                title = title,
+                desc = desc,
+                x = x,
+                y = y,
+                imageUri = selectedImageUri?.toString()
+            )
         }
 
-        val x = xInput.text.toString().toDoubleOrNull()
-        if (x == null) {
-            xInput.error = "Enter a valid number"
-            return
-        }
-
-        val y = yInput.text.toString().toDoubleOrNull()
-        if (y == null) {
-            yInput.error = "Enter a valid number"
+        // Validate before saving — throws IllegalArgumentException with a user-friendly message
+        try {
+            mark.validate()
+        } catch (e: IllegalArgumentException) {
+            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             return
         }
 
         if (editingId == null) {
-            val mark = PlacedMark(
-                title = title,
-                description = description,
-                x = x,
-                y = y
-            )
             AppData.placedMarks.create(mark)
             Timber.d("Mark created with title=$title")
             Toast.makeText(this, "Mark created", Toast.LENGTH_SHORT).show()
         } else {
-            val mark = PlacedMark(
-                id = editingId!!,
-                title = title,
-                description = description,
-                x = x,
-                y = y
-            )
             AppData.placedMarks.update(mark)
             Timber.d("Mark updated id=$editingId, title=$title")
             Toast.makeText(this, "Mark updated", Toast.LENGTH_SHORT).show()

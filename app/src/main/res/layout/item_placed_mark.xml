@@ -28,4 +28,11 @@
         android:textSize="14sp"
         tools:text="X: 10.5, Y: 20.3" />
 
+    <ImageView
+        android:id="@+id/markImage"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/app_name" />
+
 </LinearLayout>

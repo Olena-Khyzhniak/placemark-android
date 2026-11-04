@@ -14,6 +14,7 @@ class PlacedMarkList {
     }
 
     fun create(mark: PlacedMark) {
+        mark.validate()
         mark.id = lastId.incrementAndGet()
         placemarks.add(mark)
         Timber.d("create: mark added id=${mark.id}, title=${mark.title}")
@@ -27,11 +28,14 @@ class PlacedMarkList {
     }
 
     fun update(mark: PlacedMark): Boolean {
+        mark.validate()
+
         val found = findOne(mark.id) ?: return false
         found.title = mark.title
-        found.description = mark.description
+        found.desc = mark.desc
         found.x = mark.x
         found.y = mark.y
+        found.imageUri = mark.imageUri
         Timber.d("update: mark updated id=${mark.id}, title=${mark.title}")
         return true
     }

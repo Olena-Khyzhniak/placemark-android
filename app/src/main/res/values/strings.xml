@@ -13,4 +13,5 @@
     <string name="hint_y">Y coordinate</string>
     <string name="btn_save">Save</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="btn_changeImage">Change Image</string>
 </resources>

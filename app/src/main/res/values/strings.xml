@@ -7,6 +7,7 @@
     <string name="btn_edit">Edit</string>
     <string name="btn_delete">Delete</string>
     <string name="label_add_mark">Add Mark</string>
+    <string name="label_edit_mark">Edit Mark</string>
     <string name="hint_title">Title</string>
     <string name="hint_description">Description</string>
     <string name="hint_x">X coordinate</string>
@@ -14,4 +15,5 @@
     <string name="btn_save">Save</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_changeImage">Change Image</string>
+    <string name="btn_pick_location">Pick Location</string>
 </resources>

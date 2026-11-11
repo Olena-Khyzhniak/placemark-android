@@ -1,6 +1,8 @@
 package org.setu.placemark
 
+import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toUri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -22,6 +24,22 @@ class AddEditActivity : AppCompatActivity() {
     var selectedImageUri: Uri? = null
 
     private var editingId: Long? = null
+    private var selectedLatitude: Double? = null
+    private var selectedLongitude: Double? = null
+
+    // Must be registered at class level, before onCreate, so the callback survives rotation/return
+    val mapPicker = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data ?: return@registerForActivityResult
+            selectedLatitude = data.getDoubleExtra("latitude", 0.0)
+            selectedLongitude = data.getDoubleExtra("longitude", 0.0)
+
+            selectedLatitude?.let { xInput.setText(it.toString()) }
+            selectedLongitude?.let { yInput.setText(it.toString()) }
+        }
+    }
 
     val imagePicker =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
@@ -30,7 +48,7 @@ class AddEditActivity : AppCompatActivity() {
                 try {
                     contentResolver.takePersistableUriPermission(
                         uri,
-                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
                 } catch (_: SecurityException) {
                     // Some providers may not grant persistable access.
@@ -60,7 +78,7 @@ class AddEditActivity : AppCompatActivity() {
 
         if (editingId != null) {
             Timber.d("Opening AddEditActivity to edit mark id=$editingId")
-            findViewById<TextView>(R.id.formTitle).text = "Edit Mark"
+            findViewById<TextView>(R.id.formTitle).text = getString(R.string.label_edit_mark)
             loadExistingMark(editingId!!)
         } else {
             Timber.d("Opening AddEditActivity to create a new mark")
@@ -71,6 +89,11 @@ class AddEditActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.imagePickButton).setOnClickListener {
             imagePicker.launch(arrayOf("image/*"))
+        }
+
+        findViewById<Button>(R.id.buttonLoc).setOnClickListener {
+            val intent = Intent(this, MapPickerActivity::class.java)
+            mapPicker.launch(intent)
         }
     }
 
@@ -92,7 +115,7 @@ class AddEditActivity : AppCompatActivity() {
         xInput.setText(mark.x.toString())
         yInput.setText(mark.y.toString())
         // Restore the saved image, or show a placeholder when none was set
-        selectedImageUri = mark.imageUri?.let { Uri.parse(it) }
+        selectedImageUri = mark.imageUri?.toUri()
         if (selectedImageUri != null) {
             imagePreview?.setImageURI(selectedImageUri)
         } else {

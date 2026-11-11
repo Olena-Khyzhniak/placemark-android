@@ -33,6 +33,7 @@ android {
 
 dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)

@@ -22,7 +22,7 @@ class MarkListActivity : AppCompatActivity(), OnMarkListener {
         recyclerView = findViewById(R.id.marksRecyclerView)
 
         adapter = PlacedMarkAdapter(
-            marks = AppData.placedMarks.findAll(),
+            marks = AppData.placedMarkList.findAll(),
             listener = this
         )
 
@@ -40,7 +40,7 @@ class MarkListActivity : AppCompatActivity(), OnMarkListener {
         super.onResume()
 
         if (::adapter.isInitialized) {
-            adapter.updateMarks(AppData.placedMarks.findAll())
+            adapter.updateMarks(AppData.placedMarkList.findAll())
         }
     }
 
@@ -60,8 +60,8 @@ class MarkListActivity : AppCompatActivity(), OnMarkListener {
             .setMessage("\"${mark.title}\" will be permanently removed.")
             .setPositiveButton("Delete") { _, _ ->
                 Timber.d("Delete confirmed for mark id=${mark.id}")
-                AppData.placedMarks.delete(mark.id)
-                adapter.updateMarks(AppData.placedMarks.findAll())
+                AppData.placedMarkList.delete(mark.id)
+                adapter.updateMarks(AppData.placedMarkList.findAll())
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 Timber.d("Delete cancelled for mark id=${mark.id}")

@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         val viewMarksButton = findViewById<Button>(R.id.viewMarksButton)
         val addMarkButton = findViewById<Button>(R.id.addMarkButton)
+        val viewMapButton = findViewById<Button>(R.id.viewMapButton)
 
         viewMarksButton.setOnClickListener {
             Timber.d("Navigating to MarkListActivity")
@@ -40,6 +41,11 @@ class MainActivity : AppCompatActivity() {
         addMarkButton.setOnClickListener {
             Timber.d("Navigating to AddEditActivity to create a new mark")
             startActivity(Intent(this, AddEditActivity::class.java))
+        }
+
+        viewMapButton.setOnClickListener {
+            Timber.d("Navigating to MapListActivity")
+            startActivity(Intent(this, MapListActivity::class.java))
         }
     }
 }

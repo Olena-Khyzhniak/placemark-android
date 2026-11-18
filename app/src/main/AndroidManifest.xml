@@ -20,6 +20,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".MapListActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".AddEditActivity"
             android:exported="false" />
 

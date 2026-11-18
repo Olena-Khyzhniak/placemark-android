@@ -16,4 +16,5 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_changeImage">Change Image</string>
     <string name="btn_pick_location">Pick Location</string>
+    <string name="btn_view_map">View Map</string>
 </resources>

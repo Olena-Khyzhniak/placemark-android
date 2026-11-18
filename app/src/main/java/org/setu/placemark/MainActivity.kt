@@ -16,6 +16,9 @@ class MainActivity : AppCompatActivity() {
         // Initialise Timber once for the whole app — debug builds only
         Timber.plant(Timber.DebugTree())
 
+        // Initialise AppData so the JSON store is ready before any activity uses it
+        AppData.initialize(this)
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

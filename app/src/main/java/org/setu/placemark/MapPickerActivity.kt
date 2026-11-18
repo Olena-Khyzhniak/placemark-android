@@ -91,7 +91,7 @@ class MapPickerActivity : AppCompatActivity() {
 
     private fun showExistingMarkers() {
         // Overlay all saved placemarks on the map for reference
-        val placemarks = AppData.placedMarks.findAll()
+        val placemarks = AppData.placedMarkList.findAll()
 
         placemarks.forEach { placemark ->
             val point = GeoPoint(

@@ -99,7 +99,7 @@ class AddEditActivity : AppCompatActivity() {
 
     private fun loadExistingMark(id: Long) {
 
-        val mark = AppData.placedMarks.findOne(id)
+        val mark = AppData.placedMarkList.findOne(id)
 
         if (mark == null) {
             Timber.w("Mark not found for id=$id")
@@ -159,11 +159,11 @@ class AddEditActivity : AppCompatActivity() {
         }
 
         if (editingId == null) {
-            AppData.placedMarks.create(mark)
+            AppData.placedMarkList.create(mark)
             Timber.d("Mark created with title=$title")
             Toast.makeText(this, "Mark created", Toast.LENGTH_SHORT).show()
         } else {
-            AppData.placedMarks.update(mark)
+            AppData.placedMarkList.update(mark)
             Timber.d("Mark updated id=$editingId, title=$title")
             Toast.makeText(this, "Mark updated", Toast.LENGTH_SHORT).show()
         }

@@ -1,6 +1,19 @@
 package org.setu.placemark
 
+import android.content.Context
+import java.io.File
 
 object AppData {
-    val placedMarks = PlacedMarkList()
+
+    lateinit var placedMarkList: PlacedMarkList
+        private set
+
+    fun initialize(context: Context) {
+        val file = File(
+            context.filesDir,
+            "place_list.json"
+        )
+
+        placedMarkList = PlacedMarkList(file)
+    }
 }
